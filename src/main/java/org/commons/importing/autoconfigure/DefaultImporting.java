@@ -1,0 +1,29 @@
+package org.commons.importing.autoconfigure;
+
+import org.commons.importing.Importer;
+import org.commons.importing.ImporterFactory;
+import org.commons.importing.ImporterFactoryBuilder;
+import org.commons.importing.Importing;
+import org.springframework.util.Assert;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+public class DefaultImporting implements Importing {
+
+    private ConcurrentHashMap<Class<?>, ImporterFactory<?>> importerFactories = new ConcurrentHashMap();
+
+    public <T> ImporterFactoryBuilder<T> getImporterFactoryBuilder() {
+        return new DefaultImporterFactoryBuilder(this);
+    }
+
+    public <T> Importer<T> getImporter(Class<T> entityClass) {
+        Assert.notNull(entityClass, "entity class is null");
+        ImporterFactory<T> importerFactory = (ImporterFactory) this.importerFactories.get(entityClass);
+        if (importerFactory == null) {
+            ImporterFactoryBuilder<T> builder = getImporterFactoryBuilder();
+            importerFactory = builder.entityClass(entityClass).build();
+            this.importerFactories.put(entityClass, importerFactory);
+        }
+        return importerFactory.createImporter();
+    }
+}

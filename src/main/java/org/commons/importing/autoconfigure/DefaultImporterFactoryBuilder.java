@@ -13,17 +13,20 @@ class DefaultImporterFactoryBuilder<T> implements ImporterFactoryBuilder<T> {
     }
 
     public ImporterFactoryBuilder<T> maxRows(int paramInt) {
-        return null;
+        this.maxRows = paramInt;
+        return this;
     }
 
     public ImporterFactoryBuilder<T> entityClass(Class<T> paramClass) {
-        return null;
+        this.entityClass = paramClass;
+        return this;
     }
 
 
     public ImporterFactory<T> build() {
-        Object factory = new DefaultImporterFactory();
-        ((DefaultImporterFactory) factory).setEntityClass(this.entityClass);
+        DefaultImporterFactory factory = new DefaultImporterFactory();
+        factory.setEntityClass(this.entityClass);
+        factory.setMaxRows(this.maxRows);
         return (ImporterFactory<T>) factory;
     }
 }

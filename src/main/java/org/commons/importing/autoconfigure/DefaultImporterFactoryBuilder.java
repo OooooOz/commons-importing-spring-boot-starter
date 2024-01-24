@@ -26,7 +26,6 @@ class DefaultImporterFactoryBuilder<T> implements ImporterFactoryBuilder<T> {
     public ImporterFactory<T> build() {
         DefaultImporterFactory factory = new DefaultImporterFactory();
         factory.setEntityClass(this.entityClass);
-        factory.setMaxRows(this.maxRows);
         return (ImporterFactory<T>) factory;
     }
 }

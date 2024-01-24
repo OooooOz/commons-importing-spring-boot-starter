@@ -54,6 +54,7 @@ public class CommonDataListener extends AnalysisEventListener<Object> {
             return;
         }
         dbConsumer.accept(list);
+        importResultVO.getSuccess().addAndGet(list.size());
     }
 
 
@@ -61,9 +62,8 @@ public class CommonDataListener extends AnalysisEventListener<Object> {
     public void onException(Exception exception, AnalysisContext context) {
         if (exception instanceof CheckException) {
             Integer rowIndex = context.readRowHolder().getRowIndex();
-            importResultVO.getFailure().incrementAndGet();
             String format = String.format(ERROR_FORMAT, ++rowIndex, exception.getMessage());
-            importResultVO.getMsgList().add(format);
+            importResultVO.addFailure(format);
         }
     }
 

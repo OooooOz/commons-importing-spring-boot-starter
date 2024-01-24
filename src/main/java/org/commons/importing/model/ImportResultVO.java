@@ -1,10 +1,10 @@
 package org.commons.importing.model;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import lombok.Data;
 
 @Data
 public class ImportResultVO {
@@ -13,5 +13,11 @@ public class ImportResultVO {
 
     private AtomicInteger success = new AtomicInteger();
 
-    private List<String> msg = new ArrayList<>();
+    private List<String> msgList = new ArrayList<>();
+
+    public void addGlobalMsg(String msg) {
+        msgList = new ArrayList<>();
+        msgList.add(msg);
+    }
+
 }

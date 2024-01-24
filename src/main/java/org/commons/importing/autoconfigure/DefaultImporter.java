@@ -1,12 +1,13 @@
 package org.commons.importing.autoconfigure;
 
 
-import com.alibaba.excel.EasyExcelFactory;
+import java.io.InputStream;
+import java.util.function.Consumer;
+
 import org.commons.importing.Importer;
 import org.commons.importing.model.ImportResultVO;
 
-import java.io.InputStream;
-import java.util.function.Consumer;
+import com.alibaba.excel.EasyExcelFactory;
 
 public class DefaultImporter<T> implements Importer<T> {
 
@@ -14,28 +15,35 @@ public class DefaultImporter<T> implements Importer<T> {
 
     private InputStream file;
 
+    private Integer maxRows;
+
     private Consumer dbConsumer;
 
     private Consumer checkConsumer;
 
     private ImportResultVO importResultVO;
 
-    DefaultImporter(DefaultImporterFactory factory) {
+    public DefaultImporter(DefaultImporterFactory factory) {
         this.factory = factory;
     }
 
     @Override
-    public void setFile(InputStream file) {
+    public void file(InputStream file) {
         this.file = file;
     }
 
     @Override
-    public void setDbConsumer(Consumer dbConsumer) {
+    public void maxRows(Integer maxRows) {
+        this.maxRows = maxRows;
+    }
+
+    @Override
+    public void dbConsumer(Consumer dbConsumer) {
         this.dbConsumer = dbConsumer;
     }
 
     @Override
-    public void setCheckConsumer(Consumer checkConsumer) {
+    public void checkConsumer(Consumer checkConsumer) {
         this.checkConsumer = checkConsumer;
     }
 
@@ -44,6 +52,7 @@ public class DefaultImporter<T> implements Importer<T> {
         CommonDataListener commonDataListener = new CommonDataListener();
         commonDataListener.setConsumer(dbConsumer);
         commonDataListener.setCheckConsumer(checkConsumer);
+        commonDataListener.setMaxRows(maxRows);
         EasyExcelFactory.read(file, factory.getEntityClass(), commonDataListener).sheet().doRead();
         importResultVO = commonDataListener.getImportResultVO();
     }

@@ -1,45 +1,46 @@
 package org.commons.importing.autoconfigure;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
-import cn.hutool.extra.spring.SpringUtil;
-import com.alibaba.excel.context.AnalysisContext;
-import com.alibaba.excel.event.AnalysisEventListener;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.commons.importing.exception.CheckException;
 import org.commons.importing.model.ImportResultVO;
 
-import javax.xml.validation.Validator;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+
+import cn.hutool.extra.spring.SpringUtil;
 
 
 public class CommonDataListener extends AnalysisEventListener<Object> {
 
-    private List<Object> list = Lists.newArrayList();
+    private static final String ERROR_FORMAT = "第%s行数据有误：%s";
 
-    private Validator validator;
+    private Consumer dbConsumer;
+
+    private Consumer checkConsumer;
+    private Integer maxRows;
+    private List<Object> list = Lists.newArrayList();
+    private Validator validator = SpringUtil.getBean(Validator.class);
+    private ImportResultVO importResultVO = new ImportResultVO();
 
     public ImportResultVO getImportResultVO() {
         return importResultVO;
     }
 
-    private ImportResultVO importResultVO = new ImportResultVO();
-
-    private Consumer dbConsumer;
-
-    private Consumer checkConsumer;
-
-    private String errorFormat = "第%s行数据有误：%s";
-
     @Override
     public void invoke(Object data, AnalysisContext context) {
-//        Set<ConstraintViolation<Object>> violations = validator.validate(data);
-//        if (CollectionUtils.isNotEmpty(violations)) {
-//            failureCount.incrementAndGet();
-//            throw new CheckException(violations.stream().map(v->v.getMessage()).collect(Collectors.toList()).toString());
-//        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(data);
+        if (CollectionUtils.isNotEmpty(violations)) {
+            throw new CheckException(violations.stream().map(v -> v.getMessage()).collect(Collectors.toList()).toString());
+        }
         if (checkConsumer != null) {
             checkConsumer.accept(data);
         }
@@ -48,24 +49,33 @@ public class CommonDataListener extends AnalysisEventListener<Object> {
 
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
+        if (maxRows != null && maxRows > list.size()) {
+            importResultVO.addGlobalMsg(String.format("导入数据超过%s条", maxRows));
+            return;
+        }
         dbConsumer.accept(list);
     }
 
-    public void setConsumer(Consumer consumer) {
-        this.dbConsumer = consumer;
-    }
 
     @Override
     public void onException(Exception exception, AnalysisContext context) {
         if (exception instanceof CheckException) {
             Integer rowIndex = context.readRowHolder().getRowIndex();
             importResultVO.getFailure().incrementAndGet();
-            String format = String.format(errorFormat, ++rowIndex, exception.getMessage());
-            importResultVO.getMsg().add(format);
+            String format = String.format(ERROR_FORMAT, ++rowIndex, exception.getMessage());
+            importResultVO.getMsgList().add(format);
         }
+    }
+
+    public void setConsumer(Consumer consumer) {
+        this.dbConsumer = consumer;
     }
 
     public void setCheckConsumer(Consumer checkConsumer) {
         this.checkConsumer = checkConsumer;
+    }
+
+    public void setMaxRows(Integer maxRows) {
+        this.maxRows = maxRows;
     }
 }

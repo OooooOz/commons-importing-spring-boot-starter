@@ -4,11 +4,16 @@ import org.commons.importing.Importer;
 import org.commons.importing.ImporterFactory;
 import org.commons.importing.ImporterFactoryBuilder;
 import org.commons.importing.Importing;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultImporting implements Importing {
+public class DefaultImporting implements Importing , ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
 
     private ConcurrentHashMap<Class<?>, ImporterFactory<?>> importerFactories = new ConcurrentHashMap();
 
@@ -25,5 +30,10 @@ public class DefaultImporting implements Importing {
             this.importerFactories.put(entityClass, importerFactory);
         }
         return importerFactory.createImporter();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

@@ -1,17 +1,19 @@
 package org.commons.importing;
 
-import org.commons.importing.model.ImportResultVO;
-
 import java.io.InputStream;
 import java.util.function.Consumer;
 
+import org.commons.importing.model.ImportResultVO;
+
 public interface Importer<T> {
 
-    void setFile(InputStream file);
+    void file(InputStream file);
 
-    void setDbConsumer(Consumer dbConsumer);
+    void maxRows(Integer maxRows);
 
-    void setCheckConsumer(Consumer checkConsumer);
+    void dbConsumer(Consumer dbConsumer);
+
+    void checkConsumer(Consumer checkConsumer);
 
     void startImport();
 

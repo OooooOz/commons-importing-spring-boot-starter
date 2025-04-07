@@ -140,7 +140,7 @@ public abstract class AbstractCommonDataListener<T> extends AnalysisEventListene
             return;
         }
         this.doBatchSave();
-        importResultVO.getSuccess().addAndGet(list.size() - importResultVO.getFailure().get());
+        importResultVO.getSuccess().addAndGet(list.size());
     }
 
     @Override

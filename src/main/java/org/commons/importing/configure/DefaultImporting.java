@@ -1,4 +1,6 @@
-package org.commons.importing.autoconfigure;
+package org.commons.importing.configure;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.commons.importing.Importer;
 import org.commons.importing.ImporterFactory;
@@ -9,9 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-public class DefaultImporting implements Importing , ApplicationContextAware {
+public class DefaultImporting implements Importing, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 

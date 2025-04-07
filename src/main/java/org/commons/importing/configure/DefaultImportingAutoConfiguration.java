@@ -1,4 +1,4 @@
-package org.commons.importing.autoconfigure;
+package org.commons.importing.configure;
 
 
 import org.commons.importing.Importing;

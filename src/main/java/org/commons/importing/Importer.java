@@ -3,6 +3,7 @@ package org.commons.importing;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
+import org.commons.importing.configure.AbstractCommonDataListener;
 import org.commons.importing.model.ImportResultVO;
 
 public interface Importer<T> {
@@ -11,11 +12,7 @@ public interface Importer<T> {
 
     void maxRows(Integer maxRows);
 
-    void dbConsumer(Consumer dbConsumer);
-
-    void checkConsumer(Consumer checkConsumer);
-
-    void startImport();
+    void startImport(AbstractCommonDataListener listener);
 
     ImportResultVO getImportResultVO();
 }

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  org.commons.importing.autoconfigure.DefaultImportingAutoConfiguration
+  org.commons.importing.configure.DefaultImportingAutoConfiguration

@@ -2,6 +2,7 @@ package org.commons.exporting.template;
 
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFDataValidation;
@@ -10,18 +11,23 @@ import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
-@Data
-@AllArgsConstructor
+@Slf4j
 public class SelectedSheetWriteHandler implements SheetWriteHandler {
 
     /**
+     * 下拉选项集合
+     */
+    private final Map<Integer, ExcelSelectedResolve> selectedMap;
+    /**
      * 设置阈值，避免生成的导入模板下拉值获取不到，可自行设置数量大小
      */
-    private final Integer limitNumber = 25;
-    private final Map<Integer, ExcelSelectedResolve> selectedMap;
+    private int limitNumber = 25;
+
+    public SelectedSheetWriteHandler(Map<Integer, ExcelSelectedResolve> selectedMap) {
+        this.selectedMap = selectedMap;
+    }
 
     /**
      * Called before create the sheet
@@ -36,6 +42,10 @@ public class SelectedSheetWriteHandler implements SheetWriteHandler {
      */
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
+        if (MapUtils.isEmpty(selectedMap)) {
+            log.info("[SelectedSheetWriteHandler#afterSheetCreate]没有自定义下拉选项");
+            return;
+        }
         // 这里可以对cell进行任何操作
         Sheet sheet = writeSheetHolder.getSheet();
         DataValidationHelper helper = sheet.getDataValidationHelper();

@@ -20,7 +20,7 @@ public class SelectedSheetWriteHandler implements SheetWriteHandler {
     /**
      * 设置阈值，避免生成的导入模板下拉值获取不到，可自行设置数量大小
      */
-    private static final Integer LIMIT_NUMBER = 25;
+    private final Integer limitNumber = 25;
     private final Map<Integer, ExcelSelectedResolve> selectedMap;
 
     /**
@@ -39,23 +39,23 @@ public class SelectedSheetWriteHandler implements SheetWriteHandler {
         // 这里可以对cell进行任何操作
         Sheet sheet = writeSheetHolder.getSheet();
         DataValidationHelper helper = sheet.getDataValidationHelper();
-        selectedMap.forEach((k, v) -> {
+        selectedMap.forEach((cellIndex, v) -> {
             // 设置下拉列表的行： 首行，末行，首列，末列
-            CellRangeAddressList rangeList = new CellRangeAddressList(v.getFirstRow(), v.getLastRow(), v.getCellIndex(), v.getCellIndex());
+            CellRangeAddressList rangeList = new CellRangeAddressList(v.getFirstRow(), v.getLastRow(), cellIndex, cellIndex);
             // 如果下拉值总数大于25，则使用一个新sheet存储，避免生成的导入模板下拉值获取不到
-            if (v.getSource().length > LIMIT_NUMBER) {
+            if (v.getSource().length > limitNumber) {
                 // 定义sheet的名称
-                // 1.创建一个隐藏的sheet 名称为 hidden + k
-                String sheetName = "hidden" + k;
+                // 1.创建一个隐藏的sheet 名称为 hidden + cellIndex
+                String sheetName = "hidden" + cellIndex;
                 Workbook workbook = writeWorkbookHolder.getWorkbook();
                 Sheet hiddenSheet = workbook.createSheet(sheetName);
                 for (int i = 0, length = v.getSource().length; i < length; i++) {
                     // 开始的行数i，列数k
-                    hiddenSheet.createRow(i).createCell(k).setCellValue(v.getSource()[i]);
+                    hiddenSheet.createRow(i).createCell(cellIndex).setCellValue(v.getSource()[i]);
                 }
                 Name category1Name = workbook.createName();
                 category1Name.setNameName(sheetName);
-                String excelLine = getExcelLine(k);
+                String excelLine = getExcelLine(cellIndex);
                 // =hidden!$H:$1:$H$50 sheet为hidden的 H1列开始H50行数据获取下拉数组
                 String refers = "=" + sheetName + "!$" + excelLine + "$1:$" + excelLine + "$" + (v.getSource().length + 1);
                 // 将刚才设置的sheet引用到你的下拉列表中

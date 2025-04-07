@@ -43,15 +43,8 @@ public final class ExcelSelectedResolveUtil {
                     excelSelectedResolve.setLastRow(selected.lastRow());
                     if (property != null && property.index() >= 0) {
                         selectedMap.put(property.index(), excelSelectedResolve);
-                        excelSelectedResolve.setCellIndex(property.index());
                     } else {
                         selectedMap.put(i, excelSelectedResolve);
-                        excelSelectedResolve.setCellIndex(i);
-                    }
-
-                    // 以自定义的索引为主，可以混合使用ExcelProperty（即，该注解不定义index，通过ExcelSelected定义）
-                    if (selected.cellIndex() >= 0) {
-                        excelSelectedResolve.setCellIndex(selected.cellIndex());
                     }
                 }
             }

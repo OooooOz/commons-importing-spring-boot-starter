@@ -21,13 +21,6 @@ public class ExcelSelectedResolve {
      */
     private int lastRow;
 
-    /**
-     * 设置下拉框的列索引
-     *
-     * @return
-     */
-    private int cellIndex;
-
     public String[] resolveSelectedSource(ExcelSelected excelSelected) {
         if (excelSelected == null) {
             return new String[0];

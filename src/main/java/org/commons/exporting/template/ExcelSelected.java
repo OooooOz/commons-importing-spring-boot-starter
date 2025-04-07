@@ -28,11 +28,4 @@ public @interface ExcelSelected {
      * 设置下拉框的结束行，默认为最后一行
      */
     int lastRow() default 0x10000;
-
-    /**
-     * 设置下拉框的列索引
-     *
-     * @return
-     */
-    int cellIndex() default -1;
 }

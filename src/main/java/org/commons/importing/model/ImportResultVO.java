@@ -17,7 +17,6 @@ public class ImportResultVO {
     private List<String> msgList = new ArrayList<>();
 
     public void addGlobalMsg(String msg) {
-        msgList = new ArrayList<>();
         msgList.add(msg);
     }
 
